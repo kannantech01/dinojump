@@ -1,6 +1,7 @@
 const dino = document.getElementById("dino");
-const obstacle = document.getElementById("obstacle");
-const scoreDisplay = document.getElementById("score");
+const cactus = document.getElementById("cactus");
+const scoreEl = document.getElementById("score");
+
 let score = 0;
 
 function jump() {
@@ -8,25 +9,44 @@ function jump() {
     dino.classList.add("jump");
     setTimeout(() => {
       dino.classList.remove("jump");
-    }, 500);
+    }, 300);
   }
 }
 
-document.addEventListener("keydown", function (event) {
-  if (event.code === "Space" || event.code === "ArrowUp") {
-    jump();
-  }
-});
+// 👉 Keyboard support
+document.addEventListener("keydown", jump);
 
-setInterval(() => {
+// 👉 Mobile tap/click support
+document.addEventListener("click", jump);
+document.addEventListener("touchstart", jump);
+
+let isAlive = setInterval(() => {
   let dinoTop = parseInt(window.getComputedStyle(dino).getPropertyValue("top"));
-  let obstacleLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue("left"));
+  let cactusLeft = parseInt(window.getComputedStyle(cactus).getPropertyValue("left"));
 
-  if (obstacleLeft > 0 && obstacleLeft < 60 && dinoTop > 130) {
-    alert("Game Over! Your score was: " + score);
+  if (cactusLeft < 90 && cactusLeft > 50 && dinoTop >= 140) {
+    alert("Game Over! Your score: " + score);
     score = 0;
-  } else if (obstacleLeft < 0) {
-    score++;
-    scoreDisplay.innerText = "Score: " + score;
+    scoreEl.textContent = "Score: 0";
+    cactus.style.left = "600px";
   }
-}, 50);
+}, 10);
+
+function moveCactus() {
+  let cactusLeft = 600;
+
+  function frame() {
+    if (cactusLeft <= -20) {
+      cactusLeft = 600;
+      score++;
+      scoreEl.textContent = "Score: " + score;
+    } else {
+      cactusLeft -= 5;
+    }
+    cactus.style.left = cactusLeft + "px";
+  }
+
+  setInterval(frame, 50);
+}
+
+moveCactus();
